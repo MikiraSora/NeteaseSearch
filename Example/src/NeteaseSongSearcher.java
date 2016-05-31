@@ -37,7 +37,7 @@ import org.json.*;
  "id": 3266
 */
 
-class SearchResult{
+class SongSearchResult{
 	String name;
 	String[] alias;
 	public static class Artist{
@@ -60,12 +60,12 @@ class SearchResult{
 		Album_Artist artist;
 	}
 	
-	public String getSongTittle(){
+	public String getTittle(){
 		String val=this.name;
 		return val==null?"null":val;
 	}
 	
-	public String getSongArtist(){
+	public String getArtist(){
 		String val=null;
 		if(this.artist.length>0){
 			val=this.artist[0].name;
@@ -73,7 +73,7 @@ class SearchResult{
 		return val==null?"null":val;
 	}
 	
-	public String getSongAlbum(){
+	public String getAlbum(){
 		String val=null;
 		if(this.album!=null){
 			val=this.album.name;
@@ -81,20 +81,20 @@ class SearchResult{
 		return val==null?"null":val;
 	}
 	
-	public long getSongId(){
+	public long getId(){
 		return this.id;
 	}
 	
-	public String toSongString()
+	public String toString()
 	{
-		return String.format("(%d) %s - %s (%s)",getSongId(),getSongArtist(),getSongTittle(),getSongAlbum());
+		return String.format("(%d) %s - %s (%s)",getId(),getArtist(),getTittle(),getAlbum());
 	}
 }
 
-class SearchResultCollection extends ArrayList<SearchResult>{}
+class SongSearchResultCollection extends ArrayList<SongSearchResult>{}
 
-class NeteaseMusicSearcher{
-	private NeteaseMusicSearcher(){}
+class NeteaseSongSearcher{
+	private NeteaseSongSearcher(){}
 	
 	public enum SearchType{
 		Song,
@@ -126,8 +126,8 @@ class NeteaseMusicSearcher{
 		return buf;
 	}
 	
-	private static SearchResult.Artist ParseArtist(String text)throws Exception{
-		SearchResult.Artist artist=new SearchResult.Artist();
+	private static SongSearchResult.Artist ParseArtist(String text)throws Exception{
+		SongSearchResult.Artist artist=new SongSearchResult.Artist();
 		JSONObject jsonobj=new JSONObject(text);
 		artist.id=(jsonobj.has("id"))?(jsonobj.get("id")):(-1);
 		artist.picUrl=(jsonobj.has("picUrl"))?(jsonobj.get("picUrl").toString()):(null);
@@ -143,9 +143,9 @@ class NeteaseMusicSearcher{
 		return artist;
 	}
 	
-	private static SearchResult.Album ParseAlbum(String text)throws Exception{
+	private static SongSearchResult.Album ParseAlbum(String text)throws Exception{
 		JSONObject jsonobj=new JSONObject(text);
-		SearchResult.Album album=new SearchResult.Album();
+		SongSearchResult.Album album=new SongSearchResult.Album();
 		
 		album.copyrightId=(jsonobj.has("copyrightId"))?(jsonobj.get("copyrightId")):(-1);
 		album.id=(jsonobj.has("id"))?(jsonobj.get("id")):(-1);
@@ -158,9 +158,9 @@ class NeteaseMusicSearcher{
 		return album;
 	}
 	
-	private static SearchResult Parse(String text)throws Exception{
+	private static SongSearchResult Parse(String text)throws Exception{
 		//Parse Base Info
-		SearchResult result=new SearchResult();
+		SongSearchResult result=new SongSearchResult();
 		JSONObject jsonobj=new JSONObject(text);
 		result.mvid=(jsonobj.has("mvid"))?(jsonobj.get("mvid")):(-1);
 		result.id=(jsonobj.has("id"))?(jsonobj.get("id")):(-1);
@@ -184,7 +184,7 @@ class NeteaseMusicSearcher{
 		if(jsonobj.has("artists")){
 			JSONArray array=jsonobj.getJSONArray("artists");
 			int len=array.length();
-			result.artist=new SearchResult.Artist[len];
+			result.artist=new SongSearchResult.Artist[len];
 			for(int i=0;i<array.length();i++){
 				result.artist[i]=ParseArtist(array.get(i).toString());
 			}
@@ -193,13 +193,13 @@ class NeteaseMusicSearcher{
 			//result.artist=ParseArtist(jsonobj.get("artist")).toString();
 		return result;
 	}
-	private static SearchResultCollection ParseAll(String buf,boolean is_Full)throws Exception{
+	private static SongSearchResultCollection ParseAll(String buf,boolean is_Full)throws Exception{
 		JSONObject array=new JSONObject(buf);
-		SearchResultCollection collection=new SearchResultCollection();
+		SongSearchResultCollection collection=new SongSearchResultCollection();
 		String tmp=array.get(("result")).toString();
 		array=new JSONObject(tmp);
 		JSONArray t= array.getJSONArray("songs");
-		SearchResult result=null;
+		SongSearchResult result=null;
 		for(int i=0;i<t.length();i++,result=null){
 			result=Parse(t.get(i).toString());
 			if(result==null)
@@ -208,10 +208,10 @@ class NeteaseMusicSearcher{
 		}
 		return collection;
 	}
-	public static SearchResultCollection Search(String text,int count,int type,int offset){
-		SearchResultCollection res=null;
+	public static SongSearchResultCollection Search(String text,int count,int offset){
+		SongSearchResultCollection res=null;
 		try{
-			String buf=GetDataFromNet(text,count,type,offset);
+			String buf=GetDataFromNet(text,count,1,offset);
 			res=ParseAll((buf),false);
 		}catch (Exception e){
 			e.fillInStackTrace();
