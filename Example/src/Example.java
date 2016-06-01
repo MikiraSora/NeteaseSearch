@@ -23,7 +23,7 @@ public class Example
 			System.out.println(result.toString());
 		}
 		
-		name="miku";
+		name="DJ";
 		UserSearchResultCollection uco=NeteaseUserSearcher.Search(name,4,0);
 		System.out.println(String.format("搜索用户 : %s ,数量 %d",name,4));
 		System.out.println(String.format("已找到 %s 个结果",uco.size()));
@@ -31,7 +31,7 @@ public class Example
 			System.out.println(String.format("%s (%d)",res.nickname,res.userId));
 		System.out.println("end");
 		
-		name="ACG";
+		name="电音";
 		PlaylistSearchResultCollection pco;
 		pco=NeteasePlaylistSearcher.Search(name,4,0);
 		System.out.println(String.format("搜索歌单 : %s ,数量 %d",name,4));
@@ -40,12 +40,20 @@ public class Example
 			System.out.println(String.format("%s (created by %s)",res.name,res.creator.nickname));
 			
 		System.out.println();
-		name="Ryu☆";
+		name="dj taka";
 		AlbumSearchResultCollection aco=NeteaseAlbumSearcher.Search(name,3,0);
 		System.out.println(String.format("搜索专辑 : %s ,数量 %d",name,3));
 		System.out.println(String.format("已找到 %s 个结果",uco.size()));
 		for(AlbumSearchResult res:aco)
 			System.out.println(String.format("%s - %s",res.getName(),res.getArtist()));
+		
+		System.out.println();
+		name="Dragon";
+		ArtistSearchResultCollection atco=NeteaseArtistSearcher.Search(name,3,0);
+		System.out.println(String.format("搜索艺术家 : %s ,数量 %d",name,3));
+		System.out.println(String.format("已找到 %s 个结果",uco.size()));
+		for(ArtistSearchResult res:atco)
+			System.out.println(String.format("%s - %d",res.getName(),res.id));
 		
 		System.out.println("end");
 		
@@ -57,7 +65,7 @@ public class Example
 		con.setRequestMethod("POST");
 		con.setDoOutput(true);
 		OutputStreamWriter writer=new OutputStreamWriter(con.getOutputStream());
-		String data=String.format("s=%s&limit=%d&type=%d&offset=%d","IIDX",1,10,0);
+		String data=String.format("s=%s&limit=%d&type=%d&offset=%d","beatmania",1,100,0);
 		writer.append(data);
 		writer.flush();
 
